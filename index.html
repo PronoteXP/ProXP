@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0b14">
+  <meta name="description" content="ProXP — une alternative PWA moderne à PRONOTE.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>ProXP — PronoteXP</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="assets/icons/192.png">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+</head>
+<body>
+  <div class="mesh"></div>
+  <svg class="grain" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+    <rect width="100%" height="100%" filter="url(#noise)"></rect>
+  </svg>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <section id="login-screen" class="login-shell">
+    <div class="login-card glass-card">
+      <div class="brand-row">
+        <div class="brand-mark"><img src="assets/icons/192.png" alt="ProXP"></div>
+        <div>
+          <div class="eyebrow">PronoteXP</div>
+          <h1>ProXP</h1>
+        </div>
+      </div>
+      <p class="lead">Une alternative moderne à PRONOTE, installable comme une vraie application.</p>
+
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab active" data-auth-tab="qr" type="button">QR Code<span>Recommandé</span></button>
+        <button class="auth-tab" data-auth-tab="token" type="button">Jeton</button>
+        <button class="auth-tab" data-auth-tab="credentials" type="button">Identifiants</button>
+      </div>
+
+      <div class="auth-panel" data-auth-panel="qr">
+        <div class="dropzone" id="qr-dropzone">
+          <input id="qr-file" type="file" accept="image/*" hidden>
+          <button class="dropzone-button" id="qr-file-button" type="button">Choisir le QR Code</button>
+          <p id="qr-file-name">Le QR PRONOTE est décodé dans votre navigateur.</p>
+        </div>
+        <label>Code PIN (4 chiffres)<input id="qr-pin" inputmode="numeric" maxlength="4" type="password" autocomplete="off" placeholder="••••"></label>
+        <button id="qr-connect" class="primary-button" type="button">Se connecter avec le QR Code</button>
+      </div>
+
+      <div class="auth-panel hidden" data-auth-panel="token">
+        <label>URL PRONOTE<input id="token-url" type="url" placeholder="https://URL.index-education.net/pronote/"></label>
+        <label>Identifiant<input id="token-user" type="text" autocomplete="off" placeholder="prenom.nom"></label>
+        <label>Jeton<input id="token-value" type="password" autocomplete="off" placeholder="Jeton PRONOTE"></label>
+        <button id="token-connect" class="primary-button" type="button">Se connecter</button>
+      </div>
+
+      <div class="auth-panel hidden" data-auth-panel="credentials">
+        <label>URL PRONOTE<input id="cred-url" type="url" placeholder="https://URL.index-education.net/pronote/"></label>
+        <label>ENT
+          <select id="cred-ent">
+            <option value="monlycee_net">MonLycée.net (Île-de-France / Yvelines)</option>
+            <option value="ac_versailles">Académie de Versailles</option>
+            <option value="open_ent_ng">Open ENT NG</option>
+            <option value="">PRONOTE Direct (Sans ENT)</option>
+          </select>
+        </label>
+        <label>Identifiant<input id="cred-user" type="text" autocomplete="off" placeholder="prenom.nom"></label>
+        <label>Mot de passe<input id="cred-pass" type="password" autocomplete="off" placeholder="••••••••"></label>
+        <button id="cred-connect" class="primary-button" type="button">Se connecter</button>
+      </div>
+
+      <div class="privacy-note"><span class="dot"></span> Le token réutilisable est enregistré localement dans IndexedDB. Aucun compte ProXP n'est créé.</div>
+      <p id="auth-status" class="status"></p>
+    </div>
+  </section>
+
+  <section id="app-shell" class="app-shell hidden">
+    <aside class="sidebar glass-card">
+      <div class="sidebar-top">
+        <div class="brand-row compact">
+          <div class="brand-mark small"><img src="assets/icons/192.png" alt=""></div>
+          <div><div class="eyebrow">PronoteXP</div><strong>ProXP</strong></div>
+        </div>
+        <nav id="main-nav" class="main-nav" aria-label="Navigation principale">
+          <button class="nav-item active" data-page="home" type="button"><span>⌂</span>Accueil</button>
+          <button class="nav-item" data-page="timetable" type="button"><span>▦</span>Emploi du temps</button>
+          <button class="nav-item" data-page="grades" type="button"><span>◒</span>Notes</button>
+          <button class="nav-item" data-page="homework" type="button"><span>✓</span>Devoirs</button>
+          <button class="nav-item" data-page="attendance" type="button"><span>○</span>Vie scolaire</button>
+          <button class="nav-item" data-page="news" type="button"><span>◉</span>Actualités</button>
+          <button class="nav-item" data-page="menus" type="button"><span>◈</span>Cantine</button>
+          <button class="nav-item" data-page="settings" type="button"><span>⚙</span>Paramètres</button>
+        </nav>
+      </div>
+      <div class="sidebar-bottom">
+        <div id="connection-badge" class="connection-badge"><span></span>Connecté</div>
+        <button id="logout-button" class="ghost-button" type="button">Supprimer la session</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="topbar glass-card">
+        <div><p class="eyebrow" id="page-kicker">Tableau de bord</p><h1 id="page-title">Bonjour</h1></div>
+        <div class="top-actions"><button id="refresh-button" class="icon-button" title="Actualiser" type="button">↻</button><button id="install-button" class="secondary-button hidden" type="button">Installer</button></div>
+      </header>
+
+      <div id="page-home" class="page active"></div>
+      <div id="page-timetable" class="page"></div>
+      <div id="page-grades" class="page"></div>
+      <div id="page-homework" class="page"></div>
+      <div id="page-attendance" class="page"></div>
+      <div id="page-news" class="page"></div>
+      <div id="page-menus" class="page"></div>
+      <div id="page-settings" class="page"></div>
+    </main>
+  </section>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

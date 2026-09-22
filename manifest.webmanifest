@@ -1,0 +1,19 @@
+{
+  "name": "ProXP",
+  "short_name": "ProXP",
+  "description": "Une alternative PWA moderne à PRONOTE, propulsée par PronoteXP-api.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#060814",
+  "theme_color": "#0a0b14",
+  "icons": [
+    {
+      "src": "assets/icons/192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
