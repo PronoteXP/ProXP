@@ -11,11 +11,12 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  group: "pages-${{ github.ref }}"
+  cancel-in-progress: true
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -28,7 +29,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'
+          path: .
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
